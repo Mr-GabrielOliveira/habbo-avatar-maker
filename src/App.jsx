@@ -7,7 +7,10 @@ import { getAvatarImageUrl, checkUserExists } from './services/habboApi';
 function App() {
   const [username, setUsername] = useState('frank');
   const [params, setParams] = useState({
-    action: 'std',
+    bodyAction: 'std',
+    handAction: 'std',
+    carryItem: '0',
+    effect: '0',
     gesture: 'std',
     direction: '2',
     head_direction: '2',
