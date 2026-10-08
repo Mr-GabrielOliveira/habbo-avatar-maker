@@ -1,87 +1,99 @@
 import React, { useState } from 'react';
 
-const AvatarPreview = ({ imageUrl, username, isLoading, hasError }) => {
-  const [copySuccess, setCopySuccess] = useState(false);
+const AvatarPreview = ({ imageUrl, username, isLoading, hasError, isAnimated }) => {
+  const [downloading, setDownloading] = useState(false);
 
-  const handleCopyUrl = async () => {
+  const handleDownload = async () => {
     if (!imageUrl) return;
+    setDownloading(true);
     try {
-      await navigator.clipboard.writeText(imageUrl);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
+      // Faz o fetch da imagem (URL.createObjectURL)
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `avatar_${username}.${isAnimated ? 'gif' : 'png'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Falha ao copiar:', err);
+      console.error('Falha ao baixar imagem via fetch, abrindo em nova aba:', err);
+      // Fallback para download: abrir em nova aba
+      window.open(imageUrl, '_blank');
+    } finally {
+      setDownloading(false);
     }
   };
 
   return (
     <section 
-      className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center gap-6 w-full max-w-md"
+      className="habbo-window flex flex-col items-center w-full max-w-sm"
       aria-label="Área de Visualização do Avatar"
     >
-      <h2 className="text-xl font-bold text-gray-800 border-b pb-2 w-full text-center">Live Preview</h2>
+      <div className="habbo-window-header w-full">
+        <span>Preview do Avatar</span>
+        <span>[?]</span>
+      </div>
       
-      {/* Live Region para Leitores de Tela */}
-      <div aria-live="polite" className="sr-only">
-        {isLoading && "Atualizando avatar..."}
-        {hasError && `Não foi possível encontrar o usuário ${username}.`}
-        {!isLoading && !hasError && imageUrl && `Visualização do avatar atualizado de ${username}.`}
-      </div>
+      <div className="habbo-content w-full flex flex-col items-center gap-6">
+        
+        {/* Live Region para Leitores de Tela */}
+        <div aria-live="polite" className="sr-only">
+          {isLoading && "Atualizando avatar..."}
+          {hasError && `Não foi possível encontrar o usuário ${username}.`}
+          {!isLoading && !hasError && imageUrl && `Visualização do avatar atualizado de ${username}.`}
+        </div>
 
-      <div className="relative w-48 h-48 bg-gray-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center gap-2">
-            <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
-            <span className="text-sm text-gray-500 font-medium">Carregando...</span>
-          </div>
-        ) : hasError ? (
-          <div className="flex flex-col items-center justify-center text-center p-4">
-            <span aria-hidden="true" className="text-4xl mb-2">🕵️‍♂️</span>
-            <p className="text-sm text-red-500 font-semibold">Usuário não encontrado ou perfil privado.</p>
-          </div>
-        ) : !username ? (
-          <div className="text-center p-4">
-            <span aria-hidden="true" className="text-4xl mb-2">👋</span>
-            <p className="text-sm text-gray-500 font-medium">Digite um nome para ver o avatar.</p>
-          </div>
-        ) : (
-          <img 
-            src={imageUrl} 
-            alt={`Visualização do avatar atualizado de ${username}`} 
-            className="max-w-full max-h-full object-contain"
-            onError={(e) => {
-              // Fallback caso a imagem não carregue
-              e.target.style.display = 'none';
-              e.target.parentElement.innerHTML = '<p class="text-sm text-red-500 font-semibold p-4 text-center">Falha ao carregar a imagem do avatar.</p>';
-            }}
-          />
-        )}
-      </div>
+        {/* Fundo "Quarto" do Preview */}
+        <div 
+          className="relative w-48 h-48 bg-[#95B7D7] rounded flex items-center justify-center shadow-inner"
+          style={{ backgroundImage: 'url("https://images.habbo.com/c_images/catalogue/icon_277.png")', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: '150%' }}
+        >
+          {isLoading ? (
+            <div className="text-white text-xs font-bold" style={{ fontFamily: "'Press Start 2P', monospace" }}>Carregando...</div>
+          ) : hasError ? (
+            <div className="text-white font-bold text-center px-4" style={{ textShadow: '1px 1px 0 #000' }}>
+              <span className="text-2xl block mb-2">:(</span>
+              Hóspede não encontrado
+            </div>
+          ) : !username ? (
+            <div className="text-white font-bold text-center" style={{ textShadow: '1px 1px 0 #000' }}>
+              Digite o nome!
+            </div>
+          ) : (
+            <img 
+              src={imageUrl} 
+              alt={`Avatar de ${username}`} 
+              className="max-w-full max-h-full object-contain drop-shadow-md pixelated"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = '<p class="text-white font-bold text-center text-sm shadow-black drop-shadow-md">Falha ao carregar imagem.</p>';
+              }}
+            />
+          )}
+        </div>
 
-      <div className="w-full flex flex-col gap-2">
-        <label htmlFor="generated-url" className="font-semibold text-sm text-gray-700">URL Gerada</label>
-        <div className="flex gap-2">
+        <div className="w-full flex flex-col gap-3">
+          <label className="habbo-label">Link Direto</label>
           <input 
             type="text" 
-            id="generated-url"
             value={imageUrl || ''} 
             readOnly 
-            className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="habbo-input text-gray-500 cursor-text"
             aria-label="URL gerada para o avatar"
+            onClick={(e) => e.target.select()}
           />
+          
           <button 
-            onClick={handleCopyUrl}
-            disabled={!imageUrl || hasError}
-            className={`px-4 py-2 rounded-md font-semibold text-white transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none focus:ring-green-500 ${
-              !imageUrl || hasError 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : copySuccess 
-                  ? 'bg-green-600' 
-                  : 'bg-green-500 hover:bg-green-600'
-            }`}
-            aria-label={copySuccess ? 'URL copiada com sucesso' : 'Copiar URL do avatar'}
+            onClick={handleDownload}
+            disabled={!imageUrl || hasError || downloading}
+            className="habbo-btn-green w-full mt-2"
+            aria-label="Baixar Avatar para o computador"
           >
-            {copySuccess ? 'Copiado!' : 'Copiar'}
+            {downloading ? 'Baixando...' : '📥 Baixar Avatar'}
           </button>
         </div>
       </div>

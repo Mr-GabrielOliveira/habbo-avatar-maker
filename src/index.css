@@ -2,6 +2,81 @@
 
 @layer base {
   body {
-    @apply bg-gray-100 text-gray-900 font-sans antialiased;
+    /* Fundo escuro clássico do Habbo */
+    @apply bg-[#0c3f59] text-gray-900 antialiased;
+    font-family: 'Ubuntu', sans-serif;
+    /* Fundo de hotel em pixel art (padrão) */
+    background-image: url('https://images.habbo.com/c_images/reception/reception_backdrop_stretch.png');
+    background-repeat: repeat-x;
+    background-position: bottom;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* Janela clássica do Habbo UI */
+  .habbo-window {
+    @apply bg-[#e1e1e1] shadow-xl relative;
+    border: 3px solid #111;
+    border-radius: 6px;
+    box-shadow: 
+      inset 2px 2px 0px 0px rgba(255,255,255,0.7),
+      inset -2px -2px 0px 0px rgba(0,0,0,0.2),
+      4px 4px 0px 0px rgba(0,0,0,0.5);
+  }
+
+  .habbo-window-header {
+    @apply bg-[#2d6f9a] text-white px-4 py-2 border-b-2 border-black flex justify-between items-center;
+    box-shadow: inset 1px 1px 0px rgba(255,255,255,0.3);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    text-shadow: 1px 1px 0px #000;
+  }
+
+  .habbo-content {
+    @apply p-4 bg-[#e9e9e9];
+    box-shadow: inset 1px 1px 0px #fff;
+  }
+
+  /* Botão Volter (Verde) */
+  .habbo-btn-green {
+    @apply bg-[#539e2f] text-white font-bold py-2 px-4 cursor-pointer relative active:top-[2px] disabled:opacity-50 disabled:cursor-not-allowed;
+    border: 2px solid #111;
+    border-radius: 4px;
+    box-shadow: 
+      inset 2px 2px 0px 0px rgba(255,255,255,0.4),
+      inset -2px -2px 0px 0px rgba(0,0,0,0.2);
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+  }
+  .habbo-btn-green:hover:not(:disabled) {
+    @apply bg-[#62b43b];
+  }
+
+  /* Botão Volter (Amarelo/Laranja) */
+  .habbo-btn-orange {
+    @apply bg-[#d37315] text-white font-bold py-2 px-4 cursor-pointer relative active:top-[2px] disabled:opacity-50 disabled:cursor-not-allowed;
+    border: 2px solid #111;
+    border-radius: 4px;
+    box-shadow: 
+      inset 2px 2px 0px 0px rgba(255,255,255,0.4),
+      inset -2px -2px 0px 0px rgba(0,0,0,0.2);
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.5);
+  }
+  .habbo-btn-orange:hover:not(:disabled) {
+    @apply bg-[#e6831d];
+  }
+
+  /* Inputs estilo pixel */
+  .habbo-input {
+    @apply w-full px-2 py-1 bg-white border-2 border-black focus:outline-none focus:bg-[#ffffe0];
+    box-shadow: inset 2px 2px 0px 0px rgba(0,0,0,0.1);
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+  }
+
+  .habbo-label {
+    @apply font-bold text-xs text-gray-800 mb-1 block uppercase;
+    font-family: 'Ubuntu', sans-serif;
   }
 }

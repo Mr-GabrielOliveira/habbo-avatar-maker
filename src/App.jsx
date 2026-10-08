@@ -5,16 +5,23 @@ import { useDebounce } from './hooks/useDebounce';
 import { getAvatarImageUrl, checkUserExists } from './services/habboApi';
 
 function App() {
-  const [username, setUsername] = useState('frank');
+  const [username, setUsername] = useState('GabrielGOL001');
+  
+  // Parâmetros V3
   const [params, setParams] = useState({
+    hotel: 'habbo.com.br',
     bodyAction: 'std',
-    handAction: 'std',
+    leftHand: 'std',
+    rightHand: 'std',
     carryItem: '0',
+    sign: '0',
     effect: '0',
     gesture: 'std',
     direction: '2',
     head_direction: '2',
-    size: 'b'
+    size: 'b',
+    headonly: false,
+    animated: false
   });
 
   const [imageUrl, setImageUrl] = useState('');
@@ -36,8 +43,8 @@ function App() {
       setIsLoading(true);
       setHasError(false);
 
-      // Verifica se o usuário existe na API pública
-      const exists = await checkUserExists(debouncedUsername);
+      // Verifica se o usuário existe no hotel selecionado
+      const exists = await checkUserExists(debouncedUsername, debouncedParams.hotel);
       
       if (exists) {
         const url = getAvatarImageUrl(debouncedUsername, debouncedParams);
@@ -54,17 +61,22 @@ function App() {
   }, [debouncedUsername, debouncedParams]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-10 px-4">
-      <header className="mb-8 text-center" aria-labelledby="main-heading">
-        <h1 id="main-heading" className="text-3xl md:text-4xl font-extrabold text-green-600 mb-2">
-          Habbo Avatar Generator
+    <div className="min-h-screen flex flex-col items-center py-10 px-4 relative z-10">
+      
+      {/* Header em Pixel Art */}
+      <header className="mb-8 text-center flex flex-col items-center" aria-labelledby="main-heading">
+        <div className="w-24 h-24 mb-4 bg-[#2d6f9a] border-4 border-black rounded-lg flex items-center justify-center habbo-window">
+           <img src="https://images.habbo.com/c_images/album1584/UK114.gif" alt="Logo Habbo" className="pixelated" />
+        </div>
+        <h1 id="main-heading" className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-wider" style={{ fontFamily: "'Press Start 2P', monospace", textShadow: '2px 2px 0 #000' }}>
+          Habbo Avatar Maker
         </h1>
-        <p className="text-gray-600 text-sm md:text-base">
-          Crie e exporte avatares incríveis em tempo real.
+        <p className="text-white font-medium bg-black bg-opacity-40 px-3 py-1 rounded">
+          Versão 3.0 Definitiva
         </p>
       </header>
 
-      <main className="w-full max-w-5xl flex flex-col md:flex-row gap-8 justify-center items-start">
+      <main className="w-full max-w-5xl flex flex-col lg:flex-row gap-8 justify-center items-start">
         <AvatarControls 
           params={params} 
           setParams={setParams} 
@@ -77,11 +89,12 @@ function App() {
           username={debouncedUsername}
           isLoading={isLoading}
           hasError={hasError}
+          isAnimated={params.animated}
         />
       </main>
       
-      <footer className="mt-12 text-center text-sm text-gray-500">
-        <p>Desenvolvido para demonstração e acessibilidade (WCAG AA).</p>
+      <footer className="mt-12 text-center text-sm text-white bg-black bg-opacity-50 px-4 py-2 rounded">
+        <p>Desenvolvido com IA para a comunidade de Habbo/Ravoatel.</p>
       </footer>
     </div>
   );
