@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const AvatarPreview = ({ imageUrl, fallbackUrl, username, isLoading, hasError, isAnimated }) => {
   const [downloading, setDownloading] = useState(false);
   const [fallbackFor, setFallbackFor] = useState('');
   const [failedFallbackFor, setFailedFallbackFor] = useState('');
+  const [copied, setCopied] = useState(false);
+  const linkInput = useRef(null);
   const usingFallback = fallbackFor === imageUrl;
   const imageFailed = Boolean(fallbackUrl) && failedFallbackFor === fallbackUrl;
   const displayedImageUrl = usingFallback ? fallbackUrl : imageUrl;
+
+  const handleCopyLink = async () => {
+    if (!displayedImageUrl) return;
+    try {
+      await navigator.clipboard.writeText(displayedImageUrl);
+    } catch {
+      linkInput.current?.select();
+      document.execCommand('copy');
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
 
   const handleDownload = async () => {
     if (!imageUrl) return;
@@ -14,6 +28,7 @@ const AvatarPreview = ({ imageUrl, fallbackUrl, username, isLoading, hasError, i
     try {
       // Faz o fetch da imagem (URL.createObjectURL)
       const response = await fetch(displayedImageUrl);
+      if (!response.ok) throw new Error('O serviço de imagem não retornou um avatar.');
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       
@@ -83,6 +98,7 @@ const AvatarPreview = ({ imageUrl, fallbackUrl, username, isLoading, hasError, i
         <div className="w-full flex flex-col gap-3">
           <label className="habbo-label">Link Direto</label>
           <input 
+            ref={linkInput}
             type="text" 
             value={displayedImageUrl || ''}
             readOnly 
@@ -91,14 +107,20 @@ const AvatarPreview = ({ imageUrl, fallbackUrl, username, isLoading, hasError, i
             onClick={(e) => e.target.select()}
           />
           
-          <button 
-            onClick={handleDownload}
-            disabled={!imageUrl || hasError || downloading}
-            className="habbo-btn-green w-full mt-2"
-            aria-label="Baixar Avatar para o computador"
-          >
-            {downloading ? 'Baixando...' : '📥 Baixar Avatar'}
-          </button>
+          <div className="preview-actions">
+            <button
+              onClick={handleDownload}
+              disabled={!imageUrl || hasError || downloading}
+              className="habbo-btn-green"
+              aria-label={`Baixar avatar em ${isAnimated ? 'GIF' : 'PNG'}`}
+            >
+              {downloading ? 'Preparando...' : `⬇ Baixar ${isAnimated ? 'GIF' : 'PNG'}`}
+            </button>
+            <button onClick={handleCopyLink} disabled={!imageUrl || imageFailed} className="habbo-btn-secondary">
+              {copied ? 'Link copiado!' : 'Copiar link'}
+            </button>
+            {displayedImageUrl && <a className="image-open-link" href={displayedImageUrl} target="_blank" rel="noopener noreferrer">Abrir imagem ↗</a>}
+          </div>
         </div>
       </div>
     </section>

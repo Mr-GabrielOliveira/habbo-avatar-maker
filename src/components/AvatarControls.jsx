@@ -1,5 +1,30 @@
 import React from 'react';
 
+const HAND_ITEMS = [
+  { group: 'Bebidas e clássicos', items: [
+    ['1', 'Água / leite / groselha'], ['5', 'Suco Bubblejuice'], ['6', 'Chá / café'],
+    ['7', 'Água / limonada'], ['8', 'Chocolate quente'], ['9', 'Poção rosa'], ['19', 'Habbo Cola'],
+    ['33', 'Calippo'], ['42', 'Saquê'], ['43', 'Suco de tomate'], ['44', 'Líquido radioativo'],
+    ['45', 'Espumante rosa'], ['46', 'Peixe'], ['47', 'Champanhe'], ['48', 'Refrigerante de laranja'],
+    ['66', 'Vitamina de banana'], ['73', 'Gemada'], ['667', 'Habbo Cola clássica'],
+  ]},
+  { group: 'Comidas e doces', items: [
+    ['2', 'Cenoura'], ['3', 'Sorvete de baunilha'], ['4', 'Hambúrguer / sorvete'], ['63', 'Pipoca'],
+    ['64', 'Lata verde'], ['67', 'Goma azul'], ['68', 'Goma vermelha'], ['69', 'Goma verde'],
+    ['70', 'Coxa de peru'], ['71', 'Torrada'], ['75', 'Sorvete de morango'], ['76', 'Sorvete de menta'],
+    ['77', 'Sorvete de chocolate'], ['79', 'Algodão-doce rosa'], ['80', 'Algodão-doce azul'],
+    ['81', 'Cachorro-quente'], ['83', 'Maçã envenenada'], ['89', 'Cupcake'],
+  ]},
+  { group: 'Objetos e especiais', items: [
+    ['65', 'Lata de spray'], ['74', 'Taça de brinde'], ['1000', 'Rosa'], ['1001', 'Rosa negra'],
+    ['1002', 'Girassol'], ['1029', 'Balão'], ['1030', 'Pincel'], ['1031', 'Tocha olímpica'],
+    ['1032', 'Major Tom'], ['1033', 'OVNI'], ['1034', 'Objeto alienígena'], ['1035', 'Chave inglesa'],
+    ['1036', 'Pato de borracha'], ['1037', 'Cobra'], ['1038', 'Graveto'], ['1039', 'Mão ferida'],
+    ['1040', 'Coração'], ['1041', 'Lula'], ['1042', 'Fezes de morcego'], ['1043', 'Minhoca'],
+    ['1044', 'Rato morto'], ['1045', 'Dentadura'],
+  ]},
+];
+
 const AvatarControls = ({ params, setParams, username, setUsername }) => {
   const handleChange = (e) => {
     const target = e.target;
@@ -63,12 +88,12 @@ const AvatarControls = ({ params, setParams, username, setUsername }) => {
         {/* Bloco 2: Rotação e Rosto */}
         <div className="grid grid-cols-2 gap-4 pb-4 border-b-2 border-dotted border-gray-400">
           <div className="flex flex-col gap-1">
-            <label htmlFor="direction" className="habbo-label">Rotação Corpo (0-7)</label>
-            <input type="number" id="direction" name="direction" min="0" max="7" value={params.direction} onChange={handleChange} className="habbo-input" />
+            <label htmlFor="direction" className="habbo-label">Rotação do corpo <output className="rotation-value">{params.direction}</output></label>
+            <input type="range" id="direction" name="direction" min="0" max="7" step="1" value={params.direction} onChange={handleChange} className="rotation-slider" aria-label={`Rotação do corpo: ${params.direction} de 7`} />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="head_direction" className="habbo-label">Rotação Cabeça (0-7)</label>
-            <input type="number" id="head_direction" name="head_direction" min="0" max="7" value={params.head_direction} onChange={handleChange} className="habbo-input" />
+            <label htmlFor="head_direction" className="habbo-label">Rotação da cabeça <output className="rotation-value">{params.head_direction}</output></label>
+            <input type="range" id="head_direction" name="head_direction" min="0" max="7" step="1" value={params.head_direction} onChange={handleChange} className="rotation-slider" aria-label={`Rotação da cabeça: ${params.head_direction} de 7`} />
           </div>
           <div className="flex flex-col gap-1 col-span-2">
             <label htmlFor="gesture" className="habbo-label">Expressão Facial</label>
@@ -76,11 +101,11 @@ const AvatarControls = ({ params, setParams, username, setUsername }) => {
               <option value="std">Normal</option>
               <option value="spk">Falando</option>
               <option value="sml">Sorrindo</option>
-              <option value="sur">Surpreso</option>
+              <option value="srp">Surpreso</option>
               <option value="agr">Nervoso</option>
               <option value="sad">Triste</option>
-              <option value="eyb">Olhos Fechados</option>
-              <option value="srp">Dormindo</option>
+              <option value="blw">Mandando beijo</option>
+              <option value="eyb">Dormindo / olhos fechados</option>
             </select>
           </div>
         </div>
@@ -108,36 +133,45 @@ const AvatarControls = ({ params, setParams, username, setUsername }) => {
             <label htmlFor="rightHand" className="habbo-label">Mão Direita</label>
             <select id="rightHand" name="rightHand" value={params.rightHand} onChange={handleChange} className="habbo-input">
               <option value="std">Nenhuma</option>
+              <option value="crr">Segurar objeto</option>
               <option value="drk">Bebendo</option>
-              <option value="blow">Mandando Beijo</option>
+              <option value="blw">Mandando beijo</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="carryItem" className="habbo-label">Objeto (Sobrescreve)</label>
+            <label htmlFor="carryItem" className="habbo-label">Item de mão</label>
             <select id="carryItem" name="carryItem" value={params.carryItem} onChange={handleChange} className="habbo-input">
               <option value="0">Nenhum</option>
-              <option value="1">Água</option>
-              <option value="2">Cenoura</option>
-              <option value="3">Sorvete</option>
-              <option value="6">Café</option>
-              <option value="9">Suco</option>
-              <option value="42">Celular</option>
-              <option value="667">Habbo Cola</option>
+              {HAND_ITEMS.map(({ group, items }) => (
+                <optgroup label={group} key={group}>
+                  {items.map(([id, label]) => <option value={id} key={id}>{label} · {id}</option>)}
+                </optgroup>
+              ))}
             </select>
+            <span className="control-hint">Escolha um item e selecione “Segurar objeto” ou “Bebendo”.</span>
           </div>
           <div className="flex flex-col gap-1 col-span-2">
             <label htmlFor="sign" className="habbo-label">Placa / Sinal</label>
             <select id="sign" name="sign" value={params.sign} onChange={handleChange} className="habbo-input">
-              <option value="0">Nenhuma</option>
+              <option value="">Nenhuma</option>
+              <option value="0">Número 0</option>
               <option value="1">Sinal 1 (1)</option>
               <option value="2">Sinal 2 (2)</option>
+              <option value="3">Sinal 3 (3)</option>
+              <option value="4">Sinal 4 (4)</option>
+              <option value="5">Sinal 5 (5)</option>
+              <option value="6">Sinal 6 (6)</option>
+              <option value="7">Sinal 7 (7)</option>
+              <option value="8">Sinal 8 (8)</option>
+              <option value="9">Sinal 9 (9)</option>
+              <option value="10">Sinal 10</option>
               <option value="11">Coração</option>
               <option value="12">Caveira</option>
               <option value="13">Exclamação</option>
               <option value="14">Futebol</option>
               <option value="15">Sorriso</option>
-              <option value="16">Cartão Amarelo</option>
-              <option value="17">Cartão Vermelho</option>
+              <option value="16">Cartão Vermelho</option>
+              <option value="17">Cartão Amarelo</option>
             </select>
           </div>
         </div>

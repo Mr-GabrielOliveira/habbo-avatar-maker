@@ -23,19 +23,16 @@ export const getAvatarImageUrl = (username, params) => {
   }
 
   // Sinais (mão esquerda prioritária para alguns hotéis)
-  if (params.sign && params.sign !== '0') {
-    actionsArray.push(`sign=${params.sign}`);
+  if (params.sign !== undefined && params.sign !== null && params.sign !== '' && params.sign !== 'none') {
+    actionsArray.push(`sig=${params.sign}`);
   }
   
   // Ação da Mão Direita e Objetos (crr)
   // REGRA DE CONFLITO: Se o usuário carrega um objeto (crr > 0), isso sobressai e pode conflitar com "drk" ou "blow".
   if (params.carryItem && params.carryItem !== '0') {
-    actionsArray.push(`crr=${params.carryItem}`);
-    
-    // Se o usuário selecionou algo como "drk" (beber), mesclamos para ele beber o que está segurando
-    if (params.rightHand === 'drk') {
-      actionsArray.push('drk');
-    }
+    // O código do item precisa acompanhar a ação: drk=6 bebe o item 6; crr=6 segura.
+    const handAction = params.rightHand === 'drk' ? 'drk' : 'crr';
+    actionsArray.push(`${handAction}=${params.carryItem}`);
   } else {
     // Se não está segurando nada, pode fazer outras ações com a mão direita
     if (params.rightHand && params.rightHand !== 'std') {
@@ -79,10 +76,10 @@ export const getFallbackAvatarImageUrl = (username, params) => {
   const actions = [];
   if (params.bodyAction && params.bodyAction !== 'std') actions.push(params.bodyAction);
   if (params.leftHand && params.leftHand !== 'std') actions.push(params.leftHand);
-  if (params.sign && params.sign !== '0') actions.push(`sign=${params.sign}`);
+  if (params.sign !== undefined && params.sign !== null && params.sign !== '' && params.sign !== 'none') actions.push(`sig=${params.sign}`);
   if (params.carryItem && params.carryItem !== '0') {
-    actions.push(`crr=${params.carryItem}`);
-    if (params.rightHand === 'drk') actions.push('drk');
+    const handAction = params.rightHand === 'drk' ? 'drk' : 'crr';
+    actions.push(`${handAction}=${params.carryItem}`);
   } else if (params.rightHand && params.rightHand !== 'std') {
     actions.push(params.rightHand);
   }
@@ -96,6 +93,7 @@ export const getFallbackAvatarImageUrl = (username, params) => {
   });
   if (params.headonly) searchParams.set('headonly', '1');
   if (params.effect && params.effect !== '0') searchParams.set('effect', params.effect);
+  if (params.animated) searchParams.set('img_format', 'gif');
   return `https://www.${hotelDomain}/habbo-imaging/avatarimage?${searchParams.toString()}`;
 };
 

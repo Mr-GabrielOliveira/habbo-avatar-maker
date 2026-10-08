@@ -74,6 +74,8 @@
 .studio-description { max-width: 570px; margin: 13px auto 0; color: #e1f4ff; font-size: 16px; line-height: 1.55; text-shadow: 0 2px 8px #071326; }
 .studio-credit { margin: 12px 0 0; color: #a9cce0; font-size: 13px; }
 .studio-credit strong { color: #ffe07b; }
+.studio-guide { display: flex; justify-content: center; align-items: center; gap: 13px; margin: 20px auto 0; color: #c2d9ed; font-size: 11px; font-weight: 700; letter-spacing: .035em; }
+.studio-guide i { color: #ffe07b; font-style: normal; }
 .studio-main { width: min(1120px, 100%); margin: 0 auto; align-items: stretch; }
 .studio-footer { margin: 26px auto 0; color: #c3d8e8; font-size: 12px; text-align: center; }
 .studio-footer strong { color: #fff; }
@@ -95,6 +97,7 @@
 }
 .studio-main .habbo-content { padding: 19px; background: linear-gradient(150deg, #f8fbff, #e8f1fa); }
 .studio-main .habbo-label { color: #29415c; letter-spacing: .025em; }
+.control-hint { color: #61758a; font-size: 11px; line-height: 1.35; }
 .studio-main .habbo-input {
   min-height: 38px;
   border: 1px solid #a9bed1;
@@ -105,6 +108,9 @@
 }
 .studio-main .habbo-input:focus { border-color: #397db4; box-shadow: 0 0 0 3px #62b6eb33; }
 .studio-main input[type="checkbox"] { width: 16px; height: 16px; accent-color: #267cad; }
+.studio-main .rotation-slider { width: 100%; height: 24px; margin: 4px 0 0; accent-color: #287eb0; cursor: grab; }
+.studio-main .rotation-slider:active { cursor: grabbing; }
+.rotation-value { float: right; display: inline-grid; min-width: 23px; height: 21px; place-items: center; border-radius: 6px; color: #fff; background: #2b76a4; font-size: 11px; }
 .studio-main .habbo-btn-green {
   min-height: 44px;
   border: 1px solid #1c5c36;
@@ -114,6 +120,13 @@
   transition: filter .16s ease, transform .16s ease;
 }
 .studio-main .habbo-btn-green:hover:not(:disabled) { filter: brightness(1.08); }
+.preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.preview-actions .habbo-btn-green { grid-column: 1 / -1; }
+.habbo-btn-secondary { min-height: 40px; border: 1px solid #9db5cb; border-radius: 7px; color: #29415c; background: linear-gradient(#fff, #e5eef6); font-weight: 700; cursor: pointer; }
+.habbo-btn-secondary:hover:not(:disabled) { background: #d9ebf7; }
+.habbo-btn-secondary:disabled { opacity: .5; cursor: not-allowed; }
+.image-open-link { grid-column: 1 / -1; color: #2c6f9f; font-size: 12px; font-weight: 700; text-align: center; text-decoration: none; }
+.image-open-link:hover { text-decoration: underline; }
 .avatar-stage {
   overflow: hidden;
   border: 1px solid #a5c6dd;
@@ -138,5 +151,6 @@
   .studio-shell { padding: 26px 14px 20px; }
   .studio-header { margin-bottom: 23px; }
   .studio-description { font-size: 14px; }
+  .studio-guide { flex-wrap: wrap; gap: 7px; font-size: 10px; }
   .studio-main { gap: 20px; }
 }

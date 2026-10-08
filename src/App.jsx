@@ -15,7 +15,7 @@ function App() {
     leftHand: 'std',
     rightHand: 'std',
     carryItem: '0',
-    sign: '0',
+    sign: '',
     effect: '0',
     gesture: 'std',
     direction: '2',
@@ -31,7 +31,8 @@ function App() {
 
   // Aplica o debounce (500ms) nos inputs
   const debouncedUsername = useDebounce(username, 500);
-  const debouncedParams = useDebounce(params, 500);
+  // Atualiza poses e rotações depressa sem disparar uma requisição por evento de UI.
+  const debouncedParams = useDebounce(params, 60);
 
   useEffect(() => {
     const fetchAvatar = async () => {
@@ -60,7 +61,8 @@ function App() {
         <div className="studio-kicker">Habbo Avatar Studio <span>·</span> BR / PT</div>
         <h1 id="main-heading" className="studio-title">Seu estilo.<br /><em>Seu Habbo.</em></h1>
         <p className="studio-description">Monte seu visual, escolha a pose e leve seu avatar para qualquer lugar.</p>
-        <p className="studio-credit">Feito com React pela comunidade · Desenvolvido por <strong>Gabrielo 001</strong></p>
+        <p className="studio-credit">Feito com React e apoio do ChatGPT · Desenvolvido por <strong>Gabrielo 001</strong></p>
+        <p className="studio-guide"><span>01 · Escolha o Habbo</span><i>→</i><span>02 · Monte o visual</span><i>→</i><span>03 · Baixe e compartilhe</span></p>
       </header>
 
       <main className="studio-main w-full flex flex-col lg:flex-row gap-7 justify-center">
@@ -82,7 +84,7 @@ function App() {
       </main>
       
       <footer className="studio-footer">
-        <p>Um projeto independente, criado com <strong>React</strong> para a comunidade Habbo.</p>
+        <p>Projeto independente feito com <strong>React e ChatGPT</strong>, para a comunidade Habbo · por <strong>Gabrielo 001</strong>.</p>
       </footer>
     </div>
   );
