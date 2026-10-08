@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import AvatarControls from './components/AvatarControls';
 import AvatarPreview from './components/AvatarPreview';
 import { useDebounce } from './hooks/useDebounce';
-import { getAvatarImageUrl } from './services/habboApi';
+import { getAvatarImageUrl, getFallbackAvatarImageUrl } from './services/habboApi';
+import './App.css';
 
 function App() {
-  const [username, setUsername] = useState('GabrielGOL001');
+  const [username, setUsername] = useState('Gabrielol001');
   
   // Parâmetros V3
   const [params, setParams] = useState({
@@ -53,22 +54,16 @@ function App() {
   }, [debouncedUsername, debouncedParams]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-10 px-4 relative z-10">
-      
-      {/* Header em Pixel Art */}
-      <header className="mb-8 text-center flex flex-col items-center" aria-labelledby="main-heading">
-        <div className="w-24 h-24 mb-4 bg-[#2d6f9a] border-4 border-black rounded-lg flex items-center justify-center habbo-window">
-           <img src="https://images.habbo.com/c_images/album1584/UK114.gif" alt="Logo Habbo" className="pixelated" />
-        </div>
-        <h1 id="main-heading" className="text-2xl md:text-3xl font-extrabold text-white mb-2 tracking-wider" style={{ fontFamily: "'Press Start 2P', monospace", textShadow: '2px 2px 0 #000' }}>
-          Habbo Avatar Maker
-        </h1>
-        <p className="text-white font-medium bg-black bg-opacity-40 px-3 py-1 rounded">
-          Versão 3.0 Definitiva
-        </p>
+    <div className="studio-shell flex flex-col items-center">
+      <header className="studio-header" aria-labelledby="main-heading">
+        <div className="studio-mark" aria-hidden="true"><span>G</span><span>✦</span></div>
+        <div className="studio-kicker">Habbo Avatar Studio <span>·</span> BR / PT</div>
+        <h1 id="main-heading" className="studio-title">Seu estilo.<br /><em>Seu Habbo.</em></h1>
+        <p className="studio-description">Monte seu visual, escolha a pose e leve seu avatar para qualquer lugar.</p>
+        <p className="studio-credit">Feito com React pela comunidade · Desenvolvido por <strong>Gabrielo 001</strong></p>
       </header>
 
-      <main className="w-full max-w-5xl flex flex-col lg:flex-row gap-8 justify-center items-start">
+      <main className="studio-main w-full flex flex-col lg:flex-row gap-7 justify-center">
         <AvatarControls 
           params={params} 
           setParams={setParams} 
@@ -78,6 +73,7 @@ function App() {
         
         <AvatarPreview 
           imageUrl={imageUrl} 
+          fallbackUrl={getFallbackAvatarImageUrl(debouncedUsername.trim(), debouncedParams)}
           username={debouncedUsername}
           isLoading={isLoading}
           hasError={hasError}
@@ -85,8 +81,8 @@ function App() {
         />
       </main>
       
-      <footer className="mt-12 text-center text-sm text-white bg-black bg-opacity-50 px-4 py-2 rounded">
-        <p>Desenvolvido com IA para a comunidade de Habbo/Ravoatel.</p>
+      <footer className="studio-footer">
+        <p>Um projeto independente, criado com <strong>React</strong> para a comunidade Habbo.</p>
       </footer>
     </div>
   );

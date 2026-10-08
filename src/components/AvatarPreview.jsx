@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 
-const AvatarPreview = ({ imageUrl, username, isLoading, hasError, isAnimated }) => {
+const AvatarPreview = ({ imageUrl, fallbackUrl, username, isLoading, hasError, isAnimated }) => {
   const [downloading, setDownloading] = useState(false);
+  const [fallbackFor, setFallbackFor] = useState('');
+  const [failedFallbackFor, setFailedFallbackFor] = useState('');
+  const usingFallback = fallbackFor === imageUrl;
+  const imageFailed = Boolean(fallbackUrl) && failedFallbackFor === fallbackUrl;
+  const displayedImageUrl = usingFallback ? fallbackUrl : imageUrl;
 
   const handleDownload = async () => {
     if (!imageUrl) return;
     setDownloading(true);
     try {
       // Faz o fetch da imagem (URL.createObjectURL)
-      const response = await fetch(imageUrl);
+      const response = await fetch(displayedImageUrl);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       
@@ -22,7 +27,7 @@ const AvatarPreview = ({ imageUrl, username, isLoading, hasError, isAnimated }) 
     } catch (err) {
       console.error('Falha ao baixar imagem via fetch, abrindo em nova aba:', err);
       // Fallback para download: abrir em nova aba
-      window.open(imageUrl, '_blank');
+      window.open(displayedImageUrl, '_blank', 'noopener,noreferrer');
     } finally {
       setDownloading(false);
     }
@@ -44,20 +49,19 @@ const AvatarPreview = ({ imageUrl, username, isLoading, hasError, isAnimated }) 
         <div aria-live="polite" className="sr-only">
           {isLoading && "Atualizando avatar..."}
           {hasError && `Não foi possível encontrar o usuário ${username}.`}
-          {!isLoading && !hasError && imageUrl && `Visualização do avatar atualizado de ${username}.`}
+          {!isLoading && !hasError && imageUrl && !imageFailed && `Visualização do avatar atualizado de ${username}.`}
         </div>
 
         {/* Fundo "Quarto" do Preview */}
         <div 
-          className="relative w-48 h-48 bg-[#95B7D7] rounded flex items-center justify-center shadow-inner"
-          style={{ backgroundImage: 'url("https://images.habbo.com/c_images/catalogue/icon_277.png")', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: '150%' }}
+          className="avatar-stage relative w-48 h-48 rounded flex items-center justify-center shadow-inner"
         >
           {isLoading ? (
             <div className="text-white text-xs font-bold" style={{ fontFamily: "'Press Start 2P', monospace" }}>Carregando...</div>
-          ) : hasError ? (
+          ) : hasError || imageFailed ? (
             <div className="text-white font-bold text-center px-4" style={{ textShadow: '1px 1px 0 #000' }}>
               <span className="text-2xl block mb-2">:(</span>
-              Hóspede não encontrado
+              Não foi possível carregar este avatar. Confira o nick e tente novamente.
             </div>
           ) : !username ? (
             <div className="text-white font-bold text-center" style={{ textShadow: '1px 1px 0 #000' }}>
@@ -65,12 +69,12 @@ const AvatarPreview = ({ imageUrl, username, isLoading, hasError, isAnimated }) 
             </div>
           ) : (
             <img 
-              src={imageUrl} 
+              src={displayedImageUrl}
               alt={`Avatar de ${username}`} 
               className="max-w-full max-h-full object-contain drop-shadow-md pixelated"
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.parentElement.innerHTML = '<p class="text-white font-bold text-center text-sm shadow-black drop-shadow-md">Falha ao carregar imagem.</p>';
+              onError={() => {
+                if (!usingFallback && fallbackUrl && fallbackUrl !== imageUrl) setFallbackFor(imageUrl);
+                else setFailedFallbackFor(fallbackUrl);
               }}
             />
           )}
@@ -80,7 +84,7 @@ const AvatarPreview = ({ imageUrl, username, isLoading, hasError, isAnimated }) 
           <label className="habbo-label">Link Direto</label>
           <input 
             type="text" 
-            value={imageUrl || ''} 
+            value={displayedImageUrl || ''}
             readOnly 
             className="habbo-input text-gray-500 cursor-text"
             aria-label="URL gerada para o avatar"

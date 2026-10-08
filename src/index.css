@@ -2,15 +2,9 @@
 
 @layer base {
   body {
-    /* Fundo escuro clássico do Habbo */
-    @apply bg-[#0c3f59] text-gray-900 antialiased;
+    @apply text-gray-900 antialiased;
     font-family: 'Ubuntu', sans-serif;
-    /* Fundo de hotel em pixel art (padrão) */
-    background-image: url('https://images.habbo.com/c_images/reception/reception_backdrop_stretch.png');
-    background-repeat: repeat-x;
-    background-position: bottom;
-    background-size: cover;
-    background-attachment: fixed;
+    background: #102849;
   }
 }
 

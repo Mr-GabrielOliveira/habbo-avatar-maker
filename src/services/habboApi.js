@@ -5,8 +5,7 @@
 export const getAvatarImageUrl = (username, params) => {
   if (!username) return '';
 
-  const hotelDomain = params.hotel || 'habbo.com.br';
-  const baseUrl = `https://www.${hotelDomain}/habbo-imaging/avatarimage`;
+  const baseUrl = 'https://habbohistory.com/habbo-imaging/avatarimage';
   
   // ----------------------------------------------------
   // LÓGICA DE SOBREPOSIÇÃO (O SEGREDO DA API)
@@ -45,10 +44,12 @@ export const getAvatarImageUrl = (username, params) => {
   }
   
   const finalAction = actionsArray.length > 0 ? actionsArray.join(',') : 'std';
+  const hotel = (params.hotel || 'habbo.com.br').replace(/^habbo\./, '');
 
   // Parâmetros Básicos
   const searchParams = new URLSearchParams({
     user: username,
+    hotel,
     action: finalAction,
     direction: params.direction || '2', // 0-7
     head_direction: params.head_direction || '2', // 0-7
@@ -61,23 +62,41 @@ export const getAvatarImageUrl = (username, params) => {
     searchParams.append('headonly', '1');
   }
 
-  if (params.animated) {
-    // O habbo não tem parametro 'img_format=gif' em todos os hotéis (alguns ignoram),
-    // mas se tiver wlk ou wav, a api costuma retornar gif se passarmos format=2 ou algo assim?
-    // Na verdade, a documentação geralmente não exige parametro pra gif se a action for animada, 
-    // mas vamos por 'img_format=gif' pra forçar quando suportado.
-    // Algumas APIs antigas usavam ext=.gif na URL, mas vamos usar como quer.
-    // wait, actually it might just be action=wav and it automatically animates.
-    // Let's add action=wlk if animated is checked but no body action was selected? No.
-    // We'll trust the requested param.
-  }
+  searchParams.set('format', params.animated ? 'gif' : 'png');
 
   // Efeitos (só anexa o parâmetro se for diferente de 0)
   if (params.effect && params.effect !== '0') {
     searchParams.append('effect', params.effect);
   }
 
-  return `${baseUrl}?${searchParams.toString()}${params.animated ? '&img_format=gif' : ''}`;
+  return `${baseUrl}?${searchParams.toString()}`;
+};
+
+// Use o renderizador do hotel como segunda opção caso o serviço de fãs esteja indisponível.
+export const getFallbackAvatarImageUrl = (username, params) => {
+  if (!username) return '';
+  const hotelDomain = params.hotel || 'habbo.com.br';
+  const actions = [];
+  if (params.bodyAction && params.bodyAction !== 'std') actions.push(params.bodyAction);
+  if (params.leftHand && params.leftHand !== 'std') actions.push(params.leftHand);
+  if (params.sign && params.sign !== '0') actions.push(`sign=${params.sign}`);
+  if (params.carryItem && params.carryItem !== '0') {
+    actions.push(`crr=${params.carryItem}`);
+    if (params.rightHand === 'drk') actions.push('drk');
+  } else if (params.rightHand && params.rightHand !== 'std') {
+    actions.push(params.rightHand);
+  }
+  const searchParams = new URLSearchParams({
+    user: username,
+    action: actions.length ? actions.join(',') : 'std',
+    direction: params.direction || '2',
+    head_direction: params.head_direction || '2',
+    gesture: params.gesture || 'std',
+    size: params.size || 'b',
+  });
+  if (params.headonly) searchParams.set('headonly', '1');
+  if (params.effect && params.effect !== '0') searchParams.set('effect', params.effect);
+  return `https://www.${hotelDomain}/habbo-imaging/avatarimage?${searchParams.toString()}`;
 };
 
 // Verifica se o usuário existe consultando a API pública daquele hotel
