@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AvatarControls from './components/AvatarControls';
 import AvatarPreview from './components/AvatarPreview';
 import { useDebounce } from './hooks/useDebounce';
-import { getAvatarImageUrl, checkUserExists } from './services/habboApi';
+import { getAvatarImageUrl } from './services/habboApi';
 
 function App() {
   const [username, setUsername] = useState('GabrielGOL001');
@@ -34,7 +34,7 @@ function App() {
 
   useEffect(() => {
     const fetchAvatar = async () => {
-      if (!debouncedUsername) {
+      if (!debouncedUsername.trim()) {
         setImageUrl('');
         setHasError(false);
         return;
@@ -43,17 +43,9 @@ function App() {
       setIsLoading(true);
       setHasError(false);
 
-      // Verifica se o usuário existe no hotel selecionado
-      const exists = await checkUserExists(debouncedUsername, debouncedParams.hotel);
-      
-      if (exists) {
-        const url = getAvatarImageUrl(debouncedUsername, debouncedParams);
-        setImageUrl(url);
-      } else {
-        setHasError(true);
-        setImageUrl('');
-      }
-      
+      // Use a imagem como fonte da verdade: a API de usuários pode bloquear CORS.
+      // Isso evita que uma falha de consulta deixe a prévia vazia no Pages.
+      setImageUrl(getAvatarImageUrl(debouncedUsername.trim(), debouncedParams));
       setIsLoading(false);
     };
 
