@@ -75,3 +75,4 @@ Este repositório não é apenas um projeto funcional; ele serve como um **caso 
 ---
 
 > Desenvolvido de forma autônoma com 🧠 IA (Google DeepMind)
+# habbo-avatar-maker
